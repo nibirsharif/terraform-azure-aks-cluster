@@ -7,6 +7,9 @@ Backend Configuration:
 ``container_name``       = "<Container Name>"  
 ``key``                  = "<Storage Account Key>"
 
+## Initialize backend
+``terraform init -backend-config=backend.conf``
+
 ## Terraforming
 ``terraform init``     - Prepare your working directory for other commands  
 ``terraform fmt``      - Reformat your configuration in the standard style  
