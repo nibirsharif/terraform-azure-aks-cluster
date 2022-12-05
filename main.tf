@@ -43,6 +43,20 @@ resource "azurerm_kubernetes_cluster" "aks_cluster" {
   }
 }
 
+data "azurerm_container_registry" "container_registry" {
+  name                = var.container_registry
+  resource_group_name = var.acr_resource_group_name
+}
+
+resource "azurerm_role_assignment" "acr_role_assignment" {
+  principal_id                     = azurerm_kubernetes_cluster.aks_cluster.kubelet_identity[0].object_id
+  role_definition_name             = "AcrPull"
+  scope                            = data.azurerm_container_registry.container_registry.id
+  skip_service_principal_aad_check = true
+
+  depends_on = [azurerm_kubernetes_cluster.aks_cluster]
+}
+
 # https://github.com/hashicorp/terraform-provider-helm
 provider "helm" {
   kubernetes {
