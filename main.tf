@@ -20,8 +20,13 @@ provider "azurerm" {
   tenant_id       = var.tenant_id
 }
 
+resource "random_uuid" "uuid" {
+}
+
 locals {
-  cluster_name = format("aks-%s-%s", var.cluster_name, var.name_suffix)
+  cluster_name                = format("aks-%s-%s", var.cluster_name, var.name_suffix)
+  public_ip                   = format("kubernetes-%s", random_uuid.uuid.result)
+  cluster_resource_group_name = format("MC_%s_aks-%s-%s_%s", var.resource_group_name, var.cluster_name, var.name_suffix, var.region)
 }
 
 resource "azurerm_kubernetes_cluster" "aks_cluster" {
@@ -57,6 +62,17 @@ resource "azurerm_role_assignment" "acr_role_assignment" {
   depends_on = [azurerm_kubernetes_cluster.aks_cluster]
 }
 
+resource "azurerm_public_ip" "public_ip" {
+  name                = local.public_ip
+  domain_name_label   = var.fqdn
+  resource_group_name = local.cluster_resource_group_name
+  location            = var.region
+  allocation_method   = var.az_public_ip_allocation_method
+  sku                 = var.az_public_ip_sku
+
+  depends_on = [azurerm_kubernetes_cluster.aks_cluster]
+}
+
 # https://github.com/hashicorp/terraform-provider-helm
 provider "helm" {
   kubernetes {
@@ -80,6 +96,11 @@ resource "helm_release" "nginx_ingress_controller" {
     # values.yaml file contents copied from official repo at https://github.com/kubernetes/ingress-nginx/releases/tag/helm-chart-4.0.1
     file("${path.module}/helm/nginx-ingress-values.yaml")
   ]
+
+  set_sensitive {
+    name  = "controller.service.loadBalancerIP"
+    value = azurerm_public_ip.public_ip.ip_address
+  }
 
   depends_on = [azurerm_kubernetes_cluster.aks_cluster]
 }

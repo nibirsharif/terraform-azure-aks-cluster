@@ -70,6 +70,27 @@ variable "acr_resource_group_name" {
 }
 
 # ----------------------------------------------------------------------------------------------------------------------
+# PUBLIC IP
+# ----------------------------------------------------------------------------------------------------------------------
+
+variable "fqdn" {
+  type        = string
+  description = "Label for the Domain Name."
+}
+
+variable "az_public_ip_allocation_method" {
+  description = "Defines the allocation method for this IP address. Possible values are Static or Dynamic."
+  type        = string
+  default     = "Static"
+}
+
+variable "az_public_ip_sku" {
+  description = "The SKU of the Public IP. Accepted values are Basic and Standard. Defaults to Basic."
+  type        = string
+  default     = "Standard"
+}
+
+# ----------------------------------------------------------------------------------------------------------------------
 # NGINX INGRESS CONTROLLER
 # ----------------------------------------------------------------------------------------------------------------------
 
