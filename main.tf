@@ -104,3 +104,25 @@ resource "helm_release" "nginx_ingress_controller" {
 
   depends_on = [azurerm_kubernetes_cluster.aks_cluster]
 }
+
+# https://github.com/fluent/helm-charts/tree/main/charts/fluent-bit
+resource "helm_release" "fluent_bit_daemonset" {
+  name             = var.fluent_helm_name
+  repository       = var.fluent_helm_repository
+  chart            = var.fluent_helm_chart
+  version          = var.fluent_helm_version
+  namespace        = var.fluent_helm_namespace
+  create_namespace = var.fluent_helm_create_namespace
+
+  values = [
+    # values.yaml file contents copied from official repo at https://github.com/fluent/helm-charts/releases/tag/fluent-bit-0.20.10
+    templatefile("${path.module}/helm/fluent-bit-values.yaml", {
+      storage_account_name   = var.storage_account_name,
+      storage_account_key    = var.storage_account_key,
+      storage_container_name = var.storage_container_name,
+      log_directory          = var.log_directory
+    })
+  ]
+
+  depends_on = [azurerm_kubernetes_cluster.aks_cluster]
+}

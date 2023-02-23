@@ -195,3 +195,63 @@ variable "nginx_ingress_controller_metrics_service_monitor_additional_labels" {
   type        = string
   default     = "prometheus"
 }
+
+# ----------------------------------------------------------------------------------------------------------------------
+# FLUENT BIT
+# ----------------------------------------------------------------------------------------------------------------------
+
+variable "fluent_helm_name" {
+  description = "Release name."
+  type        = string
+  default     = "fluent-bit"
+}
+
+variable "fluent_helm_repository" {
+  description = "Repository URL where to locate the requested chart."
+  type        = string
+  default     = "https://fluent.github.io/helm-charts"
+}
+
+variable "fluent_helm_chart" {
+  description = "Chart name to be installed. The chart name can be local path, a URL to a chart, or the name of the chart if repository is specified. It is also possible to use the <repository>/<chart> format here if you are running Terraform on a system that the repository has been added to with helm repo add but this is not recommended."
+  type        = string
+  default     = "fluent-bit"
+}
+
+variable "fluent_helm_version" {
+  description = "Specify the exact chart version to install. If this is not specified, the latest version is installed."
+  type        = string
+  default     = "0.20.10"
+}
+
+variable "fluent_helm_namespace" {
+  description = "The namespace to install the release into. Defaults to default."
+  type        = string
+  default     = "logging"
+}
+
+variable "fluent_helm_create_namespace" {
+  description = "Create the namespace if it does not yet exist. Defaults to false."
+  type        = bool
+  default     = true
+}
+
+variable "storage_account_name" {
+  type        = string
+  description = "The name of the Azure Storage Account."
+}
+
+variable "storage_container_name" {
+  type        = string
+  description = "The name of the blob container."
+}
+
+variable "storage_account_key" {
+  type        = string
+  description = "Azure Storage Account key."
+}
+
+variable "log_directory" {
+  type        = string
+  description = "Blob storage file path."
+}
